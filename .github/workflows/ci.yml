@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
@@ -25,3 +25,4 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           files: coverage.out
+          token: ${{ secrets.CODECOV_TOKEN }}
