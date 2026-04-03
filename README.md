@@ -2,6 +2,7 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/NovikovRoman/emitter.svg)](https://pkg.go.dev/github.com/NovikovRoman/emitter)
 [![Go Report Card](https://goreportcard.com/badge/github.com/NovikovRoman/emitter)](https://goreportcard.com/report/github.com/NovikovRoman/emitter)
+[![codecov](https://codecov.io/github/NovikovRoman/emitter/graph/badge.svg?token=AH5PIC2RN5)](https://codecov.io/github/NovikovRoman/emitter)
 
 Типобезопасный event emitter.
 
