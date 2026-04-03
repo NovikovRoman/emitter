@@ -1,4 +1,7 @@
-# emitter
+# Emitter
+
+[![Go Reference](https://pkg.go.dev/badge/github.com/NovikovRoman/emitter.svg)](https://pkg.go.dev/github.com/NovikovRoman/emitter)
+[![Go Report Card](https://goreportcard.com/badge/github.com/NovikovRoman/emitter)](https://goreportcard.com/report/github.com/NovikovRoman/emitter)
 
 Типобезопасный event emitter.
 
