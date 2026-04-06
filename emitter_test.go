@@ -12,41 +12,6 @@ import (
 	"time"
 )
 
-// captureStderr перенаправляет os.Stderr в pipe на время вызова fn,
-// возвращает все, что было записано в stderr.
-func captureStderr(fn func()) string {
-	r, w, err := os.Pipe()
-	if err != nil {
-		panic(err)
-	}
-	old := os.Stderr
-	os.Stderr = w
-	fn()
-	_ = w.Close()
-	os.Stderr = old
-	buf, _ := io.ReadAll(r)
-	_ = r.Close()
-	return string(buf)
-}
-
-func containsAll(s string, substrings ...string) bool {
-	for _, sub := range substrings {
-		if !strings.Contains(s, sub) {
-			return false
-		}
-	}
-	return true
-}
-
-func eventsStrings(events []Event) []string {
-	ss := make([]string, len(events))
-	for i, e := range events {
-		ss[i] = string(e)
-	}
-	sort.Strings(ss)
-	return ss
-}
-
 func TestNew(t *testing.T) {
 	e := New()
 	if e == nil {
@@ -124,6 +89,15 @@ func TestEvents_empty(t *testing.T) {
 	if evs := e.Events(); len(evs) != 0 {
 		t.Fatalf("expected empty, got %v", evs)
 	}
+}
+
+func eventsStrings(events []Event) []string {
+	ss := make([]string, len(events))
+	for i, e := range events {
+		ss[i] = string(e)
+	}
+	sort.Strings(ss)
+	return ss
 }
 
 func TestEvents_returnsRegisteredPatterns(t *testing.T) {
@@ -558,6 +532,32 @@ func TestOnce_concurrentOff_handlerCalledAtMostOnce(t *testing.T) {
 	}
 }
 
+// captureStderr перенаправляет os.Stderr в pipe на время вызова fn,
+// возвращает все, что было записано в stderr.
+func captureStderr(fn func()) string {
+	r, w, err := os.Pipe()
+	if err != nil {
+		panic(err)
+	}
+	old := os.Stderr
+	os.Stderr = w
+	fn()
+	_ = w.Close()
+	os.Stderr = old
+	buf, _ := io.ReadAll(r)
+	_ = r.Close()
+	return string(buf)
+}
+
+func containsAll(s string, substrings ...string) bool {
+	for _, sub := range substrings {
+		if !strings.Contains(s, sub) {
+			return false
+		}
+	}
+	return true
+}
+
 func TestStderr_defaultPanicHandler(t *testing.T) {
 	e := New()
 	On(e, func(_ context.Context, _ Event, _ struct{}) {
@@ -706,4 +706,49 @@ func TestOnceAny_concurrentEmit_calledOnce(t *testing.T) {
 			t.Fatalf("expected handler called once, got %d", n)
 		}
 	}
+}
+
+func mustPanic(t *testing.T, fn func()) {
+	t.Helper()
+	defer func() {
+		if recover() == nil {
+			t.Fatal("expected panic, but none occurred")
+		}
+	}()
+	fn()
+}
+
+func TestOn_nilEmitter_panics(t *testing.T) {
+	var e *Emitter
+	mustPanic(t, func() {
+		On(e, func(_ context.Context, _ Event, _ any) {}, "ev")
+	})
+}
+
+func TestOnce_nilEmitter_panics(t *testing.T) {
+	var e *Emitter
+	mustPanic(t, func() {
+		Once(e, func(_ context.Context, _ Event, _ any) {}, "ev")
+	})
+}
+
+func TestOnceAny_nilEmitter_panics(t *testing.T) {
+	var e *Emitter
+	mustPanic(t, func() {
+		OnceAny(e, func(_ context.Context, _ Event, _ any) {}, "ev")
+	})
+}
+
+func TestEmit_nilEmitter_panics(t *testing.T) {
+	var e *Emitter
+	mustPanic(t, func() {
+		Emit[any](context.Background(), e, "ev", nil)
+	})
+}
+
+func TestEmitAsync_nilEmitter_panics(t *testing.T) {
+	var e *Emitter
+	mustPanic(t, func() {
+		EmitAsync[any](context.Background(), e, "ev", nil)
+	})
 }

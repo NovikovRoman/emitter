@@ -101,6 +101,9 @@ func (e *Emitter) OffAll() {
 // Если data не соответствует типу T, обработчик не вызывается.
 // Паникует, если не передано ни одного события.
 func On[T any](e *Emitter, handler HandlerFunc[T], events ...Event) func() {
+	if e == nil {
+		panic("emitter: On requires a non-nil Emitter")
+	}
 	if handler == nil {
 		panic("emitter: On requires a non-nil handler")
 	}
@@ -119,6 +122,9 @@ func On[T any](e *Emitter, handler HandlerFunc[T], events ...Event) func() {
 // Если data не соответствует типу T, обработчик не вызывается, но подписка все равно снимается.
 // Для подписки "один раз суммарно на несколько событий" используйте OnceAny.
 func Once[T any](e *Emitter, handler HandlerFunc[T], event Event) func() {
+	if e == nil {
+		panic("emitter: Once requires a non-nil Emitter")
+	}
 	if handler == nil {
 		panic("emitter: Once requires a non-nil handler")
 	}
@@ -147,6 +153,9 @@ func Once[T any](e *Emitter, handler HandlerFunc[T], event Event) func() {
 // все равно снимаются.
 // Паникует, если не передано ни одного события.
 func OnceAny[T any](e *Emitter, handler HandlerFunc[T], events ...Event) func() {
+	if e == nil {
+		panic("emitter: OnceAny requires a non-nil Emitter")
+	}
 	if handler == nil {
 		panic("emitter: OnceAny requires a non-nil handler")
 	}
@@ -187,6 +196,9 @@ func OnceAny[T any](e *Emitter, handler HandlerFunc[T], events ...Event) func() 
 // Если контекст отменен до или между вызовами обработчиков, оставшиеся обработчики не вызываются.
 // Паники в обработчиках перехватываются и передаются в WithPanicHandler (если задан).
 func Emit[T any](ctx context.Context, e *Emitter, event Event, data T) int {
+	if e == nil {
+		panic("emitter: Emit requires a non-nil Emitter")
+	}
 	called := 0
 	for _, h := range e.collect(event) {
 		if ctx.Err() != nil {
@@ -205,6 +217,9 @@ func Emit[T any](ctx context.Context, e *Emitter, event Event, data T) int {
 // Отмена контекста после запуска горутин не прерывает уже выполняющиеся обработчики.
 // Паники в обработчиках перехватываются и передаются в WithPanicHandler (если задан).
 func EmitAsync[T any](ctx context.Context, e *Emitter, event Event, data T) *sync.WaitGroup {
+	if e == nil {
+		panic("emitter: EmitAsync requires a non-nil Emitter")
+	}
 	var wg sync.WaitGroup
 	if ctx.Err() != nil {
 		return &wg
